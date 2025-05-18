@@ -1,0 +1,4 @@
+<svg>
+<!-- Example 2: Line -->
+<path x1="0" y1="0" x2="100" y2="100" x3="50" y3="50" stroke="green" stroke-width="8" />
+</svg>

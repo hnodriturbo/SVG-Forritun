@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pointer Events - Drawing & Dragging Demo</title>
+    <link rel="stylesheet" href="globalsDrawingAndDragging.css" />
+  </head>
+
+  <body>
+    <div class="master-container">
+      <!-- 1. Draggable box -->
+      <div
+        id="draggableBox"
+        class="draggable-box"
+        style="left: 50px; top: 50px"
+      >
+        Drag Me
+      </div>
+
+      <!-- 2. Horizontal scroll area containing multiple canvases -->
+      <div class="horizontal-scroll-container" id="scrollContainer">
+        <!-- Each .scroll-item is an inline-block container for a canvas -->
+        <div class="scroll-item">
+          <canvas></canvas>
+        </div>
+        <div class="scroll-item">
+          <canvas></canvas>
+        </div>
+        <div class="scroll-item">
+          <canvas></canvas>
+        </div>
+        <div class="scroll-item">
+          <canvas></canvas>
+        </div>
+        <div class="scroll-item">
+          <canvas></canvas>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /***************************************************************
+       * PART A: DRAGGABLE BOX
+       ***************************************************************/
+      const draggableBox = document.getElementById('draggableBox');
+
+      let isDragging = false;
+      let boxStartX = 0;
+      let boxStartY = 0;
+      let pointerStartX = 0;
+      let pointerStartY = 0;
+
+      // pointerdown on the draggable box
+      draggableBox.addEventListener('pointerdown', (event) => {
+        if (event.button !== 0) return; // Left-click only
+
+        isDragging = true;
+        boxStartX = parseInt(draggableBox.style.left, 10);
+        boxStartY = parseInt(draggableBox.style.top, 10);
+
+        pointerStartX = event.clientX;
+        pointerStartY = event.clientY;
+
+        draggableBox.style.cursor = 'grabbing';
+      });
+
+      // pointermove on the document (so we can track drag outside the box area)
+      document.addEventListener('pointermove', (event) => {
+        if (!isDragging) return;
+
+        // Calculate the distance moved
+        const deltaX = event.clientX - pointerStartX;
+        const deltaY = event.clientY - pointerStartY;
+
+        // Update box position
+        draggableBox.style.left = boxStartX + deltaX + 'px';
+        draggableBox.style.top = boxStartY + deltaY + 'px';
+      });
+
+      // pointerup on the document to release the drag
+      document.addEventListener('pointerup', () => {
+        if (isDragging) {
+          isDragging = false;
+          draggableBox.style.cursor = 'grab';
+        }
+      });
+
+      /***************************************************************
+       * PART B: CANVAS DRAWING LOGIC
+       ***************************************************************/
+      const canvasElements = document.querySelectorAll('.scroll-item canvas');
+
+      canvasElements.forEach((canvas) => {
+        // Resize the canvas to match the element's displayed size
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
+        // Get the drawing context
+        const ctx = canvas.getContext('2d');
+
+        // Set default stroke styles
+        ctx.lineWidth = 3; // Thickness of the line
+        ctx.lineCap = 'round'; // Smooth line ends
+        ctx.strokeStyle = '#000'; // Black color
+
+        // Keep track of drawing state
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        // pointerdown: Start drawing
+        canvas.addEventListener('pointerdown', (event) => {
+          isDrawing = true;
+          [lastX, lastY] = getCanvasRelativeCoords(canvas, event);
+        });
+
+        // pointermove: Draw if isDrawing is true
+        canvas.addEventListener('pointermove', (event) => {
+          if (!isDrawing) return;
+
+          const [x, y] = getCanvasRelativeCoords(canvas, event);
+
+          // Draw a line from the last point to the current point
+          ctx.beginPath();
+          ctx.moveTo(lastX, lastY);
+          ctx.lineTo(x, y);
+          ctx.stroke();
+
+          [lastX, lastY] = [x, y];
+
+          // Only prevent scrolling if vertical movement is significant
+          if (Math.abs(event.movementY) > Math.abs(event.movementX)) {
+            event.preventDefault();
+          }
+        });
+
+        // pointerup or pointercancel: stop drawing
+        ['pointerup', 'pointercancel'].forEach((type) => {
+          canvas.addEventListener(type, () => {
+            isDrawing = false;
+          });
+        });
+      });
+
+      /**
+       * Helper function to get (x, y) coordinates relative to the top-left corner
+       * of a given canvas element, based on the event's clientX/Y.
+       */
+      function getCanvasRelativeCoords(canvas, event) {
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        return [x, y];
+      }
+    </script>
+  </body>
+</html>

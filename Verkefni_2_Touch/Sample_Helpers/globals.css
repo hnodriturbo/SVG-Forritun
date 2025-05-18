@@ -1,0 +1,45 @@
+/* Basic styling for the page */
+body {
+  margin: 0;
+  font-family: sans-serif;
+}
+.master-container {
+  width: 100vw; /* Full width of the browser's viewport */
+  height: 200vh; /* Make page taller to demonstrate scrolling */
+  position: relative;
+  background: grey;
+}
+/* A visually distinct box for dragging */
+.draggable-box {
+  width: 100px;
+  height: 100px;
+  background-color: coral;
+  color: #fff;
+  display: flex;
+  position: absolute; /* Absolute positioning for drag calculations */
+  top: 50px; /* Initial top position */
+  left: 50px; /* Initial left position */
+  cursor: grab; /* Change cursor to indicate it's draggable */
+  user-select: none; /* Prevent text selection on drag */
+}
+
+/* A container that can scroll horizontally */
+.horizontal-scroll-container {
+  width: 100%;
+  max-width: 600px;
+  height: 150px;
+  overflow-x: scroll; /* Horizontal scrollbar for wide content */
+  white-space: nowrap; /* Keep items in a single row */
+  border: 2px solid #000;
+  margin: 30px auto;
+}
+
+/* Demo items within the scroll container */
+.scroll-item {
+  display: inline-block;
+  width: 150px;
+  height: 100%;
+  background-color: skyblue;
+  margin-right: 10px;
+  vertical-align: middle;
+}

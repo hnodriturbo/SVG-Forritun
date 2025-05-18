@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <title>404 Animation</title>
+    <style>
+      body {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #f0f0f0;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .number {
+        font-size: 150px;
+        font-weight: bold;
+        color: #333;
+        position: absolute;
+        opacity: 0; /* Start invisible */
+      }
+      #four-left {
+        top: 60%;
+        left: 37%;
+        transform: translate(-50%, -50%);
+      }
+      #zero {
+        top: 60%;
+        left: 47%;
+        transform: translate(-50%, -50%);
+      }
+      #four-right {
+        top: 60%;
+        left: 57%;
+        transform: translate(-50%, -50%);
+      }
+      .church {
+        position: absolute;
+        top: 30%;
+        left: 45%;
+        transform: translate(-50%, -50%);
+        height: 150px;
+        width: 150px;
+        opacity: 0; /* Start invisible */
+      }
+      .text {
+        font-size: 24px;
+        font-weight: bold;
+        color: #444;
+        position: absolute;
+        top: 20%; /* Above the church */
+        left: 40%;
+        transform: translate(-50%, -50%);
+        opacity: 0; /* Start invisible */
+      }
+      svg {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Numbers -->
+    <div class="number" id="four-left">4</div>
+    <div class="number" id="zero">0</div>
+    <div class="number" id="four-right">4</div>
+
+    <!-- Church -->
+    <img
+      src="images/hallgrimskirkja.png"
+      alt="Hallgrímskirkja"
+      class="church"
+      id="church"
+    />
+
+    <!-- Error Text -->
+    <div class="text" id="error-text">Ooops !!! Something went wrong!</div>
+
+    <!-- Circle and Lines -->
+    <svg width="800" height="800" viewBox="0 0 800 800">
+      <!-- Decorative Circle -->
+      <circle
+        cx="400"
+        cy="400"
+        r="300"
+        fill="none"
+        stroke="#333"
+        stroke-width="3"
+        stroke-dasharray="1900"
+        stroke-dashoffset="1900"
+        id="circle-path"
+      ></circle>
+
+      <!-- Underline Animation -->
+      <!-- Connected Lines with Curves -->
+      <path
+        d="M 200 600 
+       L 600 600 
+       Q 650 610 600 620 
+       L 200 620 
+       Q 150 630 200 640 
+       L 600 640"
+        fill="none"
+        stroke="#333"
+        stroke-width="3"
+        stroke-dasharray="1400"
+        stroke-dashoffset="1400"
+        id="connected-path"
+      ></path>
+    </svg>
+
+    <script>
+      // Main animation timeline
+      const mainTimeline = anime
+        .timeline({
+          easing: 'easeInOutSine',
+          duration: 2000, // Default duration for all animations
+        })
+        .add({
+          targets: '#four-left',
+          translateY: [-300, 0],
+          opacity: [0, 1],
+        })
+        .add({
+          targets: '#zero',
+          translateY: [-300, 0],
+          opacity: [0, 1],
+        })
+        .add({
+          targets: '#four-right',
+          translateY: [-300, 0],
+          opacity: [0, 1],
+        })
+        .add({
+          targets: '#church',
+          scale: [0.5, 2],
+          opacity: [0, 1],
+          rotate: '2turn',
+        })
+        .add({
+          targets: '#error-text',
+          scale: [0.5, 1],
+          opacity: [0, 1],
+          rotate: '1turn',
+        });
+
+      // Circle animation
+      anime({
+        targets: '#circle-path',
+        strokeDasharray: '10 5',
+        strokeDashoffset: [1800, 0], // Animate the circle path
+        duration: 2000,
+        easing: 'easeInOutSine',
+      });
+
+      // Line animations
+      anime({
+        targets: '#connected-path',
+        strokeDashoffset: [1400, 0], // Animate the path
+        duration: 1000,
+        easing: 'easeInOutSine',
+      });
+
+      // Looping enlargement effect for the church
+      mainTimeline.finished.then(() => {
+        anime({
+          targets: '#church',
+          scale: [
+            { value: 2.1, duration: 500 },
+            { value: 2, duration: 500 },
+          ],
+          easing: 'easeInOutSine',
+          loop: true,
+        });
+      });
+
+      // Looping enlargement effect for the numbers
+      mainTimeline.finished.then(() => {
+        anime({
+          targets: ['#four-left', '#zero', '#four-right'],
+          scale: [
+            { value: 1.1, duration: 500 },
+            { value: 1, duration: 500 },
+          ],
+          easing: 'easeInOutSine',
+          loop: true,
+        });
+      });
+    </script>
+  </body>
+</html>
+<!-- strokeDasharray: '10 5', -->

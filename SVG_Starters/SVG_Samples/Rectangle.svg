@@ -1,0 +1,4 @@
+<!-- Example 1: Rectangle -->
+<svg >
+<rect x="10" y="10" width="30" height="30" stroke="blue" stroke-width="2" fill="yellow" />
+</svg>

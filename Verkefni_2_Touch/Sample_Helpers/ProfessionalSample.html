@@ -1,0 +1,142 @@
+<!-- 
+  This file demonstrates how to use the Pointer Events API for drag gestures
+  and how to selectively enable or prevent default scrolling. It includes:
+  1. A draggable square that moves around the screen.
+  2. A scrollable container to show how to preserve scrolling behavior.
+  3. Comments explaining each important line and event.
+
+  Save this file as "pointer-events-demo.html" and open it in a browser
+  to see how it works. 
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Pointer Events API Demo</title>
+    <!-- In your <head>, include the global styles -->
+    <link rel="stylesheet" href="globals.css" />
+  </head>
+
+  <body>
+    <div class="master-container">
+      <!-- Draggable element on the page -->
+      <div
+        id="draggableBox"
+        class="draggable-box"
+        style="left: 50px; top: 50px"
+      >
+        Drag Me
+      </div>
+
+      <!-- A horizontal scroll container to test scroll vs. pointer events -->
+      <div class="horizontal-scroll-container" id="scrollContainer">
+        <div class="scroll-item"></div>
+        <div class="scroll-item"></div>
+        <div class="scroll-item"></div>
+        <div class="scroll-item"></div>
+        <div class="scroll-item"></div>
+        <div class="scroll-item"></div>
+        <div class="scroll-item"></div>
+      </div>
+    </div>
+    <script>
+      /***************************************************************
+       * 1. DRAGGABLE BOX LOGIC
+       * -------------------------------------------------------------
+       *  This section shows how to let a user drag an element around
+       *  using the pointer events API.
+       ***************************************************************/
+
+      // Select the draggable box element
+      const draggableBox = document.getElementById('draggableBox');
+
+      // Keep track of dragging state and initial positions
+      let isDragging = false;
+      let boxStartX = 0; // Starting X of the box
+      let boxStartY = 0; // Starting Y of the box
+      let pointerStartX = 0; // Pointer's initial X position
+      let pointerStartY = 0; // Pointer's initial Y position
+
+      // When pointer goes down on the box
+      draggableBox.addEventListener('pointerdown', (event) => {
+        // Mark that we are dragging
+        isDragging = true;
+
+        // Record where the box is before moving it
+        // parseInt converts the 'px' string to a number
+        boxStartX = parseInt(draggableBox.style.left, 10);
+        boxStartY = parseInt(draggableBox.style.top, 10);
+
+        // Record where the pointer is at the start
+        pointerStartX = event.clientX;
+        pointerStartY = event.clientY;
+
+        // Optional: prevent text selection or scrolling on mobile
+        event.preventDefault();
+
+        // Change cursor to indicate active drag
+        draggableBox.style.cursor = 'grabbing';
+      });
+
+      // When pointer moves
+      document.addEventListener('pointermove', (event) => {
+        if (!isDragging) return; // Only run if dragging is active
+
+        // Calculate how much pointer has moved
+        const deltaX = event.clientX - pointerStartX;
+        const deltaY = event.clientY - pointerStartY;
+
+        // Update the box position by adding the delta to the original location
+        draggableBox.style.left = boxStartX + deltaX + 'px';
+        draggableBox.style.top = boxStartY + deltaY + 'px';
+      });
+
+      // When pointer is lifted anywhere on the page
+      document.addEventListener('pointerup', () => {
+        // Stop dragging
+        isDragging = false;
+        draggableBox.style.cursor = 'grab';
+      });
+
+      /***************************************************************
+       * 2. SCROLL VS. POINTER EVENTS
+       * -------------------------------------------------------------
+       *  This section demonstrates how to preserve scrolling for an
+       *  element but still handle pointer interactions if needed.
+       ***************************************************************/
+
+      // Select the scroll container
+      const scrollContainer = document.getElementById('scrollContainer');
+
+      // We can detect pointer events on the scroll container
+      scrollContainer.addEventListener('pointerdown', (event) => {
+        // If we wanted to block scrolling, we would do:
+        // event.preventDefault();
+        // But here, we do nothing so that horizontal scrolling works
+        console.log('Pointer down in the scroll container');
+      });
+
+      scrollContainer.addEventListener('pointermove', (event) => {
+        // If you only want to block scrolling in certain conditions,
+        // you could check how far the pointer moved in the X or Y axis
+        // and call event.preventDefault() accordingly.
+        console.log('Pointer move in the scroll container');
+      });
+
+      scrollContainer.addEventListener('pointerup', () => {
+        console.log('Pointer up in the scroll container');
+      });
+
+      /***************************************************************
+       * 3. TIPS & BEST PRACTICES
+       * -------------------------------------------------------------
+       *  - Use pointercancel to detect when the browser interrupts
+       *    your gesture (like a system-level interaction).
+       *  - Consider setting CSS property: touch-action: none
+       *    on elements if you want to override default behaviors.
+       *  - Check out pointerId if you want to track multiple pointers.
+       ***************************************************************/
+    </script>
+  </body>
+</html>
